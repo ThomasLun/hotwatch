@@ -1,0 +1,27 @@
+# coding:utf-8
+# author: lipeilun
+
+from redis import Redis
+from hotqueue import key_for_name
+
+HOTQUEUE_KEY = ""  # The key for hotqueue
+REDIS_HOST = ""  # The host of redis
+REDIS_PORT = ""  # The port of redis
+
+store = Redis(host=REDIS_HOST, port=REDIS_PORT)  # Creating a redis instance:
+
+
+def length_for_names(store, *queue_names):
+    for queue_name in queue_names:
+        yield queue_name, store.llen(key_for_name(queue_name))
+
+
+def length_of_hotqueue():
+    """ get the length of hotqueue"""
+    for item in length_for_names(store, HOTQUEUE_KEY):
+        print("%s: %d items" % item)
+        return item
+
+
+if __name__ == '__main__':
+    length_of_hotqueue()
